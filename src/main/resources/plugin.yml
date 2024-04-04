@@ -1,0 +1,19 @@
+name: SimplePin
+version: '${project.version}'
+main: simplepin.SimplePin
+api-version: '1.20'
+authors: [MouseJava]
+description: Plugin for registration with GUI interface
+commands:
+  helppin:
+    description: This command allows you to display all possible plugin commands
+    usage: /<command>
+  blockpin:
+    description: This command allows you to activate the PIN the next time you log in, regardless of the time of relogin
+    usage: /<command>
+  resetpin:
+    description: This command allows you to reset the player's PIN
+    usage: /<command> <player>
+  setpin:
+    description: This command allows you to set a PIN for the player
+    usage: /<command> <player> <PIN>
