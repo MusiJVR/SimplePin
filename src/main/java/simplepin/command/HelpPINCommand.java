@@ -27,6 +27,9 @@ public class HelpPINCommand implements CommandExecutor {
                     "[SimplePin] Command: helppin \n" +
                     "[SimplePin] Description: This command allows you to display all possible plugin commands \n" +
                     "[SimplePin] Usage: /<command> \n[SimplePin] \n" +
+                    "[SimplePin] Command: reloadpin \n" +
+                    "[SimplePin] Description: This command allows you to reload the plugin config \n" +
+                    "[SimplePin] Usage: /<command> \n[SimplePin] \n" +
                     "[SimplePin] Command: blockpin \n" +
                     "[SimplePin] Description: This command allows you to activate the PIN the next time you log in, regardless of the time of relogin \n" +
                     "[SimplePin] Usage: /<command> \n[SimplePin] \n" +
@@ -50,6 +53,9 @@ public class HelpPINCommand implements CommandExecutor {
                         "§bCommand:§r §ehelppin§r \n" +
                         "§bDescription:§r §eThis command allows you to display all possible plugin commands§r \n" +
                         "§bUsage:§r §e/<command>§r \n \n" +
+                        "§bCommand:§r §ereloadpin§r \n" +
+                        "§bDescription:§r §eThis command allows you to reload the plugin config§r \n" +
+                        "§bUsage:§r §e/<command>§r \n \n" +
                         "§bCommand:§r §eblockpin§r \n" +
                         "§bDescription:§r §eThis command allows you to activate the PIN the next time you log in, regardless of the time of relogin§r \n" +
                         "§bUsage:§r §e/<command>§r \n \n" +
@@ -65,6 +71,9 @@ public class HelpPINCommand implements CommandExecutor {
                         "§bКоманда:§r §ehelppin§r \n" +
                         "§bОписание:§r §eЭта команда позволяет отображать все возможные команды плагина§r \n" +
                         "§bИспользование:§r §e/<command>§r \n \n" +
+                        "§bКоманда:§r §ereloadpin§r \n" +
+                        "§bОписание:§r §eЭта команда позволяет перезагрузить конфигурацию плагина§r \n" +
+                        "§bИспользование:§r §e/<command>§r \n \n" +
                         "§bКоманда:§r §eblockpin§r \n" +
                         "§bОписание:§r §eЭта команда позволяет активировать PIN при следующем входе в систему, независимо от времени повторного входа§r \n" +
                         "§bИспользование:§r §e/<command>§r \n \n" +
@@ -79,6 +88,9 @@ public class HelpPINCommand implements CommandExecutor {
                 sender.sendMessage("§b§l⏴-------§r§e§lSimplePin§r§b§l-------⏵§r \n" +
                         "§bCommand:§r §ehelppin§r \n" +
                         "§bDescription:§r §eThis command allows you to display all possible plugin commands§r \n" +
+                        "§bUsage:§r §e/<command>§r \n \n" +
+                        "§bCommand:§r §ereloadpin§r \n" +
+                        "§bDescription:§r §eThis command allows you to reload the plugin config§r \n" +
                         "§bUsage:§r §e/<command>§r \n \n" +
                         "§bCommand:§r §eblockpin§r \n" +
                         "§bDescription:§r §eThis command allows you to activate the PIN the next time you log in, regardless of the time of relogin§r \n" +

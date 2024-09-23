@@ -9,6 +9,10 @@ commands:
     description: This command allows you to display all possible plugin commands
     permission: simplepin.helppin
     usage: /<command>
+  reloadpin:
+    description: This command allows you to reload the plugin config
+    permission: simplepin.reloadpin
+    usage: /<command>
   blockpin:
     description: This command allows you to activate the PIN the next time you log in, regardless of the time of relogin
     permission: simplepin.blockpin
@@ -25,6 +29,9 @@ permissions:
   simplepin.helppin:
     description: Permission to use command helppin
     default: true
+  simplepin.reloadpin:
+    description: Permission to use command reloadpin
+    default: op
   simplepin.blockpin:
     description: Permission to use command blockpin
     default: true

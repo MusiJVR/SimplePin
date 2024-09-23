@@ -8,6 +8,7 @@ All technical settings and features presented here are for the latest version of
 ## Commands
 Here are all the commands that can be used in the plugin:
 * `/helppin` - This command allows you to display all possible plugin commands
+* `/reloadpin` - This command allows you to reload the plugin config
 * `/blockpin` - This command allows you to activate the PIN the next time you log in, regardless of the time of relogin
 * `/resetpin <player>` - This command allows you to reset the player's PIN
 * `/setpin <player> <PIN>` - This command allows you to set a PIN for the player
@@ -28,13 +29,14 @@ relogin-time: '300'
 ## Permissions
 The plugin has permissions:
 
-| **Permissions**                   | **Meaning**                                                   |
-|-----------------------------------|---------------------------------------------------------------|
-| `simplepin.helppin`               | Permission to use command `helppin`                           |
-| `simplepin.blockpin`              | Permission to use command `blockpin`                          |
-| `simplepin.resetpin`              | Permission to use command `resetpin`                          |
-| `simplepin.extendedresetpin`      | Permission to use the command `resetpin` on other players     |
-| `simplepin.setpin`                | Permission to use command `setpin`                            |
+| **Permissions**              | **Meaning**                                               |
+|------------------------------|-----------------------------------------------------------|
+| `simplepin.helppin`          | Permission to use command `helppin`                       |
+| `simplepin.reloadpin`        | Permission to use command `reloadpin`                     |
+| `simplepin.blockpin`         | Permission to use command `blockpin`                      |
+| `simplepin.resetpin`         | Permission to use command `resetpin`                      |
+| `simplepin.extendedresetpin` | Permission to use the command `resetpin` on other players |
+| `simplepin.setpin`           | Permission to use command `setpin`                        |
 
 ## Issues
 Please leave messages about any errors you find [here](https://github.com/MusiJVR/SimplePin/issues) or on the [Discord](https://discord.gg/xY8WJt7VGr)

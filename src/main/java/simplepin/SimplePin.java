@@ -48,6 +48,8 @@ public final class SimplePin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PINMenuInventoryHandler(this, dbDriver), this);
         getServer().getPluginCommand("helppin").setExecutor(new HelpPINCommand(this));
         getServer().getPluginCommand("helppin").setTabCompleter(new HelpPINTabCompleter());
+        getServer().getPluginCommand("reloadpin").setExecutor(new ReloadConfigCommand(this));
+        getServer().getPluginCommand("reloadpin").setTabCompleter(new ReloadConfigTabCompleter());
         getServer().getPluginCommand("blockpin").setExecutor(new BlockPINCommand(dbDriver));
         getServer().getPluginCommand("blockpin").setTabCompleter(new BlockPINTabCompleter());
         getServer().getPluginCommand("resetpin").setExecutor(new ResetPINCommand(this, dbDriver));
