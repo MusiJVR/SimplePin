@@ -22,6 +22,7 @@ public class PlayerJoinEventHandler implements Listener {
     public void PlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+        String playerIP = player.getAddress().getAddress().getHostAddress();
 
         List<Map<String, Object>> rsRegistration = dbDriver.selectData("pin", "pins", "WHERE uuid = ?", uuid);
         if (rsRegistration.isEmpty()) {
@@ -29,12 +30,13 @@ public class PlayerJoinEventHandler implements Listener {
             insertMapPins.put("uuid", uuid);
             insertMapPins.put("player_name", event.getPlayer().getName());
             insertMapPins.put("pin", null);
+            insertMapPins.put("player_ip", playerIP);
             insertMapPins.put("session_logged", 0);
             dbDriver.insertData("pins", insertMapPins);
         }
 
-        List<Map<String, Object>> rsSessionLogged = dbDriver.selectData("session_logged", "pins", "WHERE uuid = ?", uuid);
-        if ((int) rsSessionLogged.get(0).get("session_logged") == 0) {
+        List<Map<String, Object>> rsSessionLogged = dbDriver.selectData("player_ip, session_logged", "pins", "WHERE uuid = ?", uuid);
+        if (playerIP != null && !playerIP.equals(rsSessionLogged.get(0).get("player_ip")) || (int) rsSessionLogged.get(0).get("session_logged") == 0) {
             List<Map<String, Object>> rsPin = dbDriver.selectData("pin", "pins", "WHERE uuid = ?", uuid);
             String pin = (String) rsPin.get(0).get("pin");
 

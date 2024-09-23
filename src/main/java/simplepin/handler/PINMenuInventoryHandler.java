@@ -122,8 +122,8 @@ public class PINMenuInventoryHandler implements Listener {
 
         if (playerPin != null) {
             if (pin.equals(playerPin) && playerPin.length() == 4) {
+                sessionLoggedStatus(plugin, dbDriver, player);
                 playerResetInventory(player);
-                sessionLoggedStatus(plugin, dbDriver, player.getName());
                 plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
             } else {
                 if (pin.length() == 4) {
@@ -145,7 +145,7 @@ public class PINMenuInventoryHandler implements Listener {
                 dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", SimplePin.getInstance().pinPlayer.get(player.getName()));
 
                 if (Objects.equals(GeneralUtils.getMapKey(SimplePin.getInstance().pinPlayer, SimplePin.getInstance().pinPlayer.get(player.getName())), SimplePin.getInstance().pinPlayer.get(player.getName()))) {
-                    sessionLoggedStatus(plugin, dbDriver, player.getName());
+                    sessionLoggedStatus(plugin, dbDriver, player);
                     plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
                 } else {
                     String msgResetPINSuccessfully = LocalizationUtils.langCheck(language, "SET_PIN_SUCCESSFULLY");
@@ -194,10 +194,16 @@ public class PINMenuInventoryHandler implements Listener {
         }
     }
 
-    public static void sessionLoggedStatus(JavaPlugin plugin, DatabaseDriver dbDriver, String playerName) {
+    public static void sessionLoggedStatus(JavaPlugin plugin, DatabaseDriver dbDriver, Player player) {
         Map<String, Object> updateMapFirstPins= new HashMap<>();
+
+        if (player.getName().equals(SimplePin.getInstance().pinPlayer.get(player.getName()))) {
+            updateMapFirstPins.put("player_ip", player.getAddress().getAddress().getHostAddress());
+        }
+
         updateMapFirstPins.put("session_logged", 1);
-        dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", playerName);
+
+        dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", player.getName());
 
         int secondReloginTime = GeneralUtils.setDefaultValue(300, "relogin-time", 1, 3600);
 
@@ -206,7 +212,7 @@ public class PINMenuInventoryHandler implements Listener {
             public void run() {
                 Map<String, Object> updateMapSecondPins= new HashMap<>();
                 updateMapSecondPins.put("session_logged", 0);
-                dbDriver.updateData("pins", updateMapSecondPins, "player_name = ?", playerName);
+                dbDriver.updateData("pins", updateMapSecondPins, "player_name = ?", player.getName());
             }
         }, secondReloginTime * 20L);
     }

@@ -30,7 +30,7 @@ public final class SimplePin extends JavaPlugin implements Listener {
         LocalizationUtils.loadLang(this);
 
         dbDriver = new DatabaseDriver("jdbc:sqlite:" + getDataFolder() + "/spdatabase.db");
-        dbDriver.createTable("pins", "uuid TEXT NOT NULL PRIMARY KEY", "player_name TEXT", "pin TEXT", "session_logged INTEGER");
+        dbDriver.createTable("pins", "uuid CHAR(36) NOT NULL PRIMARY KEY", "player_name VARCHAR(255)", "pin VARCHAR(4)", "player_ip VARCHAR(45)", "session_logged TINYINT UNSIGNED");
 
         Map<String, Object> updateMapPins= new HashMap<>();
         updateMapPins.put("session_logged", 0);
