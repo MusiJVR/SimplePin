@@ -32,49 +32,45 @@ public class SetPINCommand implements CommandExecutor {
             return GeneralUtils.msgSend(sender, language, "INVALID_COMMAND", false);
         }
 
-        if (sender instanceof Player && !sender.isOp()) {
+        if (sender instanceof Player && !sender.hasPermission("simplepin.setpin")) {
             return GeneralUtils.msgSend(sender, language, "NO_RIGHTS_USE_COMMAND", true);
         }
 
         String inputPlayerName = args[0];
 
-        if (sender instanceof Player && sender.getName().equals(inputPlayerName)) {
+        List<Map<String, Object>> rsPlayer = dbDriver.selectData("player_name", "pins", "WHERE player_name = ?", inputPlayerName);
+
+        if (sender instanceof Player && sender.getName().equals(inputPlayerName) || rsPlayer.isEmpty()) {
             return GeneralUtils.msgSend(sender, language, "WRONG_PLAYER_NAME", true);
         }
 
         if (args.length == 2) {
             String newPIN = args[1];
 
-            List<Map<String, Object>> rsPlayer = dbDriver.selectData("player_name", "pins", "WHERE player_name = ?", inputPlayerName);
-
-            if (rsPlayer.isEmpty()) {
-                return GeneralUtils.msgSend(sender, language, "WRONG_PLAYER_NAME", true);
-            } else {
-                if (newPIN.length() != 4 || !GeneralUtils.checkDigits(newPIN)) {
-                    return GeneralUtils.msgSend(sender, language, "WRONG_PIN", true);
-                }
-
-                Map<String, Object> updateMapFirstPins= new HashMap<>();
-                updateMapFirstPins.put("pin", newPIN);
-                updateMapFirstPins.put("session_logged", 0);
-                dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", inputPlayerName);
-
-                if (sender instanceof Player) {
-                    Player playerSender = (Player) sender;
-                    String msgResetPINSuccessfully = LocalizationUtils.langCheck(language, "SET_PIN_SUCCESSFULLY");
-                    playerSender.sendMessage(msgResetPINSuccessfully.replace("%player%", inputPlayerName));
-                    playerSender.playSound(playerSender.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                }
-
-                Player playerSetPIN = plugin.getServer().getPlayer(inputPlayerName);
-                if (playerSetPIN != null) {
-                    String msgYourPINSet = LocalizationUtils.langCheck(language, "YOUR_PIN_SET");
-                    playerSetPIN.sendMessage(msgYourPINSet.replace("%pin%", newPIN));
-                    playerSetPIN.playSound(playerSetPIN.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                }
-
-                plugin.getServer().getLogger().info("[SimplePin] " + inputPlayerName + " has a new PIN set");
+            if (newPIN.length() != 4 || !GeneralUtils.checkDigits(newPIN)) {
+                return GeneralUtils.msgSend(sender, language, "WRONG_PIN", true);
             }
+
+            Map<String, Object> updateMapFirstPins= new HashMap<>();
+            updateMapFirstPins.put("pin", newPIN);
+            updateMapFirstPins.put("session_logged", 0);
+            dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", inputPlayerName);
+
+            if (sender instanceof Player) {
+                Player playerSender = (Player) sender;
+                String msgResetPINSuccessfully = LocalizationUtils.langCheck(language, "SET_PIN_SUCCESSFULLY");
+                playerSender.sendMessage(msgResetPINSuccessfully.replace("%player%", inputPlayerName));
+                playerSender.playSound(playerSender.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            }
+
+            Player playerSetPIN = plugin.getServer().getPlayer(inputPlayerName);
+            if (playerSetPIN != null) {
+                String msgYourPINSet = LocalizationUtils.langCheck(language, "YOUR_PIN_SET");
+                playerSetPIN.sendMessage(msgYourPINSet.replace("%pin%", newPIN));
+                playerSetPIN.playSound(playerSetPIN.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            }
+
+            plugin.getServer().getLogger().info("[SimplePin] " + inputPlayerName + " has a new PIN set");
         } else {
             if (!(sender instanceof Player)) {
                 return GeneralUtils.msgSend(sender, language, "INVALID_COMMAND", false);

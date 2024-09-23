@@ -37,7 +37,7 @@ public class ResetPINCommand implements CommandExecutor {
             if (sender instanceof Player && args.length == 0) {
                 inputPlayerName = sender.getName();
             } else {
-                if (sender instanceof Player && !sender.isOp()) {
+                if (sender instanceof Player && !sender.hasPermission("simplepin.extendedresetpin")) {
                     return GeneralUtils.msgSend(sender, language, "NO_RIGHTS_USE_COMMAND", true);
                 }
 

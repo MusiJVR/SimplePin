@@ -7,13 +7,33 @@ description: Plugin for registration with GUI interface
 commands:
   helppin:
     description: This command allows you to display all possible plugin commands
+    permission: simplepin.helppin
     usage: /<command>
   blockpin:
     description: This command allows you to activate the PIN the next time you log in, regardless of the time of relogin
+    permission: simplepin.blockpin
     usage: /<command>
   resetpin:
     description: This command allows you to reset the player's PIN
+    permission: simplepin.resetpin
     usage: /<command> <player>
   setpin:
     description: This command allows you to set a PIN for the player
+    permission: simplepin.setpin
     usage: /<command> <player> <PIN>
+permissions:
+  simplepin.helppin:
+    description: Permission to use command helppin
+    default: true
+  simplepin.blockpin:
+    description: Permission to use command blockpin
+    default: true
+  simplepin.resetpin:
+    description: Permission to use command resetpin
+    default: true
+  simplepin.extendedresetpin:
+    description: Permission to use the command resetpin on other players
+    default: op
+  simplepin.setpin:
+    description: Permission to use command setpin
+    default: op

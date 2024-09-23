@@ -25,6 +25,17 @@ relogin-time: '300'
 * `login-attempts` - This parameter is intended to indicate the number of attempts to enter PIN codes (the value must not be less than `1` and greater than `100`)
 * `relogin-time` - This parameter is intended to specify the number of seconds after which the server will again request a PIN code (the value must not be less than `1` and greater than `3600`)
 
+## Permissions
+The plugin has permissions:
+
+| **Permissions**                   | **Meaning**                                                   |
+|-----------------------------------|---------------------------------------------------------------|
+| `simplepin.helppin`               | Permission to use command `helppin`                           |
+| `simplepin.blockpin`              | Permission to use command `blockpin`                          |
+| `simplepin.resetpin`              | Permission to use command `resetpin`                          |
+| `simplepin.extendedresetpin`      | Permission to use the command `resetpin` on other players     |
+| `simplepin.setpin`                | Permission to use command `setpin`                            |
+
 ## Issues
 Please leave messages about any errors you find [here](https://github.com/MusiJVR/SimplePin/issues) or on the [Discord](https://discord.gg/xY8WJt7VGr)
 

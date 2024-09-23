@@ -16,7 +16,7 @@ public class SetPINTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.isOp()) {
+        if (!sender.hasPermission("simplepin.setpin")) {
             return new ArrayList<>();
         }
 
