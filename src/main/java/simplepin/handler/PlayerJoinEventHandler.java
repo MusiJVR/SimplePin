@@ -7,61 +7,60 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import simplepin.SimplePin;
 import simplepin.utils.PinMenuUtils;
-import simplepin.utils.SqliteDriver;
+import simplepin.utils.DatabaseDriver;
 
 import java.util.*;
 
-
 public class PlayerJoinEventHandler implements Listener {
-    private SqliteDriver sql;
-    public PlayerJoinEventHandler(SqliteDriver sql) {
-        this.sql = sql;
+    private final DatabaseDriver dbDriver;
+
+    public PlayerJoinEventHandler(DatabaseDriver dbDriver) {
+        this.dbDriver = dbDriver;
     }
 
     @EventHandler
     public void PlayerJoinEvent(PlayerJoinEvent event) {
-        try {
-            Player player = event.getPlayer();
-            UUID uuid = player.getUniqueId();
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
 
-            List<Map<String, Object>> rsRegistration = sql.sqlSelectData("Pin", "PINS", "UUID = '" + uuid + "'");
-            if (rsRegistration.isEmpty()) {
-                Map<String, Object> insertMap = new HashMap<>();
-                insertMap.put("UUID", uuid);
-                insertMap.put("PlayerName", event.getPlayer().getName());
-                insertMap.put("SessionLogged", 0);
-                sql.sqlInsertData("PINS", insertMap);
+        List<Map<String, Object>> rsRegistration = dbDriver.selectData("pin", "pins", "WHERE uuid = ?", uuid);
+        if (rsRegistration.isEmpty()) {
+            Map<String, Object> insertMapPins = new HashMap<>();
+            insertMapPins.put("uuid", uuid);
+            insertMapPins.put("player_name", event.getPlayer().getName());
+            insertMapPins.put("pin", null);
+            insertMapPins.put("session_logged", 0);
+            dbDriver.insertData("pins", insertMapPins);
+        }
+
+        List<Map<String, Object>> rsSessionLogged = dbDriver.selectData("session_logged", "pins", "WHERE uuid = ?", uuid);
+        if ((int) rsSessionLogged.get(0).get("session_logged") == 0) {
+            List<Map<String, Object>> rsPin = dbDriver.selectData("pin", "pins", "WHERE uuid = ?", uuid);
+            String pin = (String) rsPin.get(0).get("pin");
+
+            if (pin == null || pin.length() != 4) {
+                Map<String, Object> updateMapPins= new HashMap<>();
+                updateMapPins.put("pin", null);
+                dbDriver.updateData("pins", updateMapPins, "uuid = ?", uuid);
             }
 
-            List<Map<String, Object>> rsSessionLogged = sql.sqlSelectData("SessionLogged", "PINS", "UUID = '" + uuid + "'");
-            if ((Integer) rsSessionLogged.get(0).get("SessionLogged") == 0) {
-                List<Map<String, Object>> rsPin = sql.sqlSelectData("Pin", "PINS", "UUID = '" + uuid + "'");
-                String pin = (String) rsPin.get(0).get("Pin");
-
-                if (pin == null || pin.length() != 4) {
-                    sql.sqlUpdateData("PINS", "Pin = NULL", "UUID = '" + uuid + "'");
-                }
-
-                if (!SimplePin.getInstance().playerInventories.containsKey(player.getName())) {
-                    SimplePin.getInstance().playerInventories.put(player.getName(), player.getInventory().getContents());
-                    player.getInventory().clear();
-                }
-
-                SimplePin.getInstance().playerMode.put(player.getName(), player.getGameMode().toString());
-                player.setGameMode(GameMode.SPECTATOR);
-
-                SimplePin.getInstance().pinCodes.put(player.getName(), "");
-
-                SimplePin.getInstance().pinPlayer.put(player.getName(), player.getName());
-
-                SimplePin.getInstance().playerLocations.put(player.getName(), player.getLocation());
-
-                SimplePin.getInstance().attemptsLogin.put(player.getName(), 1);
-
-                PinMenuUtils.openPinMenu(player);
+            if (!SimplePin.getInstance().playerInventories.containsKey(player.getName())) {
+                SimplePin.getInstance().playerInventories.put(player.getName(), player.getInventory().getContents());
+                player.getInventory().clear();
             }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+
+            SimplePin.getInstance().playerMode.put(player.getName(), player.getGameMode().toString());
+            player.setGameMode(GameMode.SPECTATOR);
+
+            SimplePin.getInstance().pinCodes.put(player.getName(), "");
+
+            SimplePin.getInstance().pinPlayer.put(player.getName(), player.getName());
+
+            SimplePin.getInstance().playerLocations.put(player.getName(), player.getLocation());
+
+            SimplePin.getInstance().attemptsLogin.put(player.getName(), 1);
+
+            PinMenuUtils.openPinMenu(player);
         }
     }
 }

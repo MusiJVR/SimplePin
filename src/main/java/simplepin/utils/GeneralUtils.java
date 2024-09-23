@@ -7,7 +7,6 @@ import simplepin.SimplePin;
 
 import java.util.*;
 
-
 public class GeneralUtils {
     public static boolean checkUtil(Player player, String language, String msg, Boolean value) {
         player.sendMessage(LocalizationUtils.langCheck(language, msg));
@@ -25,10 +24,10 @@ public class GeneralUtils {
         return digits;
     }
 
-    public static int setDefaultValue(Integer value, String pathConfig, Integer minValue, Integer maxValue) {
+    public static int setDefaultValue(int value, String pathConfig, int minValue, int maxValue) {
         String valueDefaultConfig = SimplePin.getInstance().getConfig().getString(pathConfig);
         if (GeneralUtils.checkDigits(valueDefaultConfig)) {
-            Integer valueDefault = new Integer(valueDefaultConfig);
+            int valueDefault = Integer.parseInt(valueDefaultConfig);
 
             if (valueDefault >= minValue && valueDefault <= maxValue) {
                 value = valueDefault;

@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-
 public enum DefaultConfig {
     LANG("lang", "en_en"),
     LOGIN_ATTEMPTS("login-attempts", "3"),

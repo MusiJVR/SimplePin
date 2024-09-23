@@ -9,7 +9,6 @@ import simplepin.SimplePin;
 
 import java.util.*;
 
-
 public class PinMenuUtils {
     public static void openPinMenu(Player player) {
         String language = SimplePin.getInstance().getConfig().getString("lang");
@@ -69,15 +68,15 @@ public class PinMenuUtils {
         }
     }
 
-    public static void pinPanel(Player player, Integer i) {
+    public static void pinPanel(Player player, int index) {
         ItemStack digitPin = getHeadFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU1Mjg2YzQ3MGY2NmZmYTFhMTgzMzFjYmZmYjlhM2MyYTQ0MjRhOGM3MjU5YzQ0MzZmZDJlMzU1ODJhNTIyIn19fQ==");
         SkullMeta digitPin_meta = (SkullMeta) digitPin.getItemMeta();
         digitPin_meta.setDisplayName(" ");
         digitPin.setItemMeta(digitPin_meta);
-        player.getInventory().setItem(i, digitPin);
+        player.getInventory().setItem(index, digitPin);
     }
 
     public static ItemStack getHeadFromValue(String value) {
-        return Bukkit.getUnsafe().modifyItemStack(new ItemStack(Material.PLAYER_HEAD, 1, (short)3), "{SkullOwner:{Id:\"" + UUID.nameUUIDFromBytes(value.getBytes()) + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}");
+        return Bukkit.getUnsafe().modifyItemStack(new ItemStack(Material.PLAYER_HEAD, 1, (short) 3), "{SkullOwner:{Id:\"" + UUID.nameUUIDFromBytes(value.getBytes()) + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}");
     }
 }

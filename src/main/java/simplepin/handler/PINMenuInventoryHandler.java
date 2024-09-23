@@ -13,17 +13,17 @@ import simplepin.SimplePin;
 import simplepin.utils.GeneralUtils;
 import simplepin.utils.LocalizationUtils;
 import simplepin.utils.PinMenuUtils;
-import simplepin.utils.SqliteDriver;
+import simplepin.utils.DatabaseDriver;
 
 import java.util.*;
 
-
 public class PINMenuInventoryHandler implements Listener {
     private final JavaPlugin plugin;
-    private SqliteDriver sql;
-    public PINMenuInventoryHandler(JavaPlugin plugin, SqliteDriver sql) {
+    private final DatabaseDriver dbDriver;
+
+    public PINMenuInventoryHandler(JavaPlugin plugin, DatabaseDriver dbDriver) {
         this.plugin = plugin;
-        this.sql = sql;
+        this.dbDriver = dbDriver;
     }
 
     @EventHandler
@@ -59,7 +59,7 @@ public class PINMenuInventoryHandler implements Listener {
                 resetPinDigit(player);
                 player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE, 1.0f, 1.0f);
             } else if (Objects.equals(event.getCurrentItem().getItemMeta().getDisplayName(), "§a§l" + LocalizationUtils.langCheck(language, "CONFIRM_PIN"))) {
-                confirmPinDigit(plugin, sql, player, language);
+                confirmPinDigit(plugin, dbDriver, player, language);
             }
 
             event.setCancelled(true);
@@ -114,61 +114,61 @@ public class PINMenuInventoryHandler implements Listener {
         player.playSound(player.getLocation(), Sound.BLOCK_STONE_PLACE, 1.0f, 1.0f);
     }
 
-    public static void confirmPinDigit(JavaPlugin plugin, SqliteDriver sql, Player player, String language) {
-        try {
-            String pin = SimplePin.getInstance().pinCodes.get(player.getName());
+    public static void confirmPinDigit(JavaPlugin plugin, DatabaseDriver dbDriver, Player player, String language) {
+        String pin = SimplePin.getInstance().pinCodes.get(player.getName());
 
-            List<Map<String, Object>> rsPin = sql.sqlSelectData("Pin", "PINS", "PlayerName = '" + SimplePin.getInstance().pinPlayer.get(player.getName()) + "'");
-            String playerPin = (String) rsPin.get(0).get("Pin");
+        List<Map<String, Object>> rsPin = dbDriver.selectData("pin", "pins", "WHERE player_name = ?", SimplePin.getInstance().pinPlayer.get(player.getName()));
+        String playerPin = (String) rsPin.get(0).get("pin");
 
-            if (playerPin != null) {
-                if (pin.equals(playerPin) && playerPin.length() == 4) {
-                    playerResetInventory(player);
-                    sessionLoggedStatus(plugin, sql, player.getName());
-                    plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
-                } else {
-                    if (pin.length() == 4) {
-                        Integer allowedAttempts = GeneralUtils.setDefaultValue(3, "login-attempts", 1, 100);
-
-                        SimplePin.getInstance().attemptsLogin.put(player.getName(), SimplePin.getInstance().attemptsLogin.get(player.getName()) + 1);
-                        resetPinDigit(player);
-
-                        if (SimplePin.getInstance().attemptsLogin.get(player.getName()) > allowedAttempts) {
-                            attemptsAreOver(plugin, player, language);
-                        }
-                    }
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
-                }
+        if (playerPin != null) {
+            if (pin.equals(playerPin) && playerPin.length() == 4) {
+                playerResetInventory(player);
+                sessionLoggedStatus(plugin, dbDriver, player.getName());
+                plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
             } else {
                 if (pin.length() == 4) {
-                    sql.sqlUpdateData("PINS", "Pin = '" + pin + "'", "PlayerName = '" + SimplePin.getInstance().pinPlayer.get(player.getName()) + "'");
+                    int allowedAttempts = GeneralUtils.setDefaultValue(3, "login-attempts", 1, 100);
 
-                    if (Objects.equals(GeneralUtils.getMapKey(SimplePin.getInstance().pinPlayer, SimplePin.getInstance().pinPlayer.get(player.getName())), SimplePin.getInstance().pinPlayer.get(player.getName()))) {
-                        sessionLoggedStatus(plugin, sql, player.getName());
-                        plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
-                    } else {
-                        String msgResetPINSuccessfully = LocalizationUtils.langCheck(language, "SET_PIN_SUCCESSFULLY");
-                        player.sendMessage(msgResetPINSuccessfully.replace("%player%", SimplePin.getInstance().pinPlayer.get(player.getName())));
+                    SimplePin.getInstance().attemptsLogin.put(player.getName(), SimplePin.getInstance().attemptsLogin.get(player.getName()) + 1);
+                    resetPinDigit(player);
 
-                        Player playerSetPIN = plugin.getServer().getPlayer(SimplePin.getInstance().pinPlayer.get(player.getName()));
-                        if (playerSetPIN != null) {
-                            String msgYourPINSet = LocalizationUtils.langCheck(language, "YOUR_PIN_SET");
-                            playerSetPIN.sendMessage(msgYourPINSet.replace("%pin%", pin));
-                            playerSetPIN.playSound(playerSetPIN.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                        }
+                    if (SimplePin.getInstance().attemptsLogin.get(player.getName()) > allowedAttempts) {
+                        attemptsAreOver(plugin, player, language);
+                    }
+                }
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
+            }
+        } else {
+            if (pin.length() == 4) {
+                Map<String, Object> updateMapFirstPins= new HashMap<>();
+                updateMapFirstPins.put("pin", pin);
+                dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", SimplePin.getInstance().pinPlayer.get(player.getName()));
 
-                        sql.sqlUpdateData("PINS", "SessionLogged = " + 0, "PlayerName = '" + SimplePin.getInstance().pinPlayer.get(player.getName()) + "'");
+                if (Objects.equals(GeneralUtils.getMapKey(SimplePin.getInstance().pinPlayer, SimplePin.getInstance().pinPlayer.get(player.getName())), SimplePin.getInstance().pinPlayer.get(player.getName()))) {
+                    sessionLoggedStatus(plugin, dbDriver, player.getName());
+                    plugin.getServer().getLogger().info("[SimplePin] " + player.getName() + " successfully logged in");
+                } else {
+                    String msgResetPINSuccessfully = LocalizationUtils.langCheck(language, "SET_PIN_SUCCESSFULLY");
+                    player.sendMessage(msgResetPINSuccessfully.replace("%player%", SimplePin.getInstance().pinPlayer.get(player.getName())));
 
-                        plugin.getServer().getLogger().info("[SimplePin] " + SimplePin.getInstance().pinPlayer.get(player.getName()) + " has a new PIN set");
+                    Player playerSetPIN = plugin.getServer().getPlayer(SimplePin.getInstance().pinPlayer.get(player.getName()));
+                    if (playerSetPIN != null) {
+                        String msgYourPINSet = LocalizationUtils.langCheck(language, "YOUR_PIN_SET");
+                        playerSetPIN.sendMessage(msgYourPINSet.replace("%pin%", pin));
+                        playerSetPIN.playSound(playerSetPIN.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
                     }
 
-                    playerResetInventory(player);
-                } else {
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
+                    Map<String, Object> updateMapSecondPins= new HashMap<>();
+                    updateMapSecondPins.put("session_logged", 0);
+                    dbDriver.updateData("pins", updateMapSecondPins, "player_name = ?", SimplePin.getInstance().pinPlayer.get(player.getName()));
+
+                    plugin.getServer().getLogger().info("[SimplePin] " + SimplePin.getInstance().pinPlayer.get(player.getName()) + " has a new PIN set");
                 }
+
+                playerResetInventory(player);
+            } else {
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
             }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
 
@@ -194,25 +194,21 @@ public class PINMenuInventoryHandler implements Listener {
         }
     }
 
-    public static void sessionLoggedStatus(JavaPlugin plugin, SqliteDriver sql, String playerName) {
-        try {
-            sql.sqlUpdateData("PINS", "SessionLogged = " + 1, "PlayerName = '" + playerName + "'");
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
+    public static void sessionLoggedStatus(JavaPlugin plugin, DatabaseDriver dbDriver, String playerName) {
+        Map<String, Object> updateMapFirstPins= new HashMap<>();
+        updateMapFirstPins.put("session_logged", 1);
+        dbDriver.updateData("pins", updateMapFirstPins, "player_name = ?", playerName);
 
-        Integer secondReloginTime = GeneralUtils.setDefaultValue(300, "relogin-time", 1, 3600);
+        int secondReloginTime = GeneralUtils.setDefaultValue(300, "relogin-time", 1, 3600);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                try {
-                    sql.sqlUpdateData("PINS", "SessionLogged = " + 0, "PlayerName = '" + playerName + "'");
-                } catch (Exception e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
+                Map<String, Object> updateMapSecondPins= new HashMap<>();
+                updateMapSecondPins.put("session_logged", 0);
+                dbDriver.updateData("pins", updateMapSecondPins, "player_name = ?", playerName);
             }
-        }, secondReloginTime * 20);
+        }, secondReloginTime * 20L);
     }
 
     public static void attemptsAreOver(JavaPlugin plugin, Player player, String language) {

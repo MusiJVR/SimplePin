@@ -9,9 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import simplepin.SimplePin;
 import simplepin.utils.GeneralUtils;
 
-
 public class HelpPINCommand implements CommandExecutor {
     private final JavaPlugin plugin;
+
     public HelpPINCommand(JavaPlugin plugin) {
         this.plugin = plugin;
     }
